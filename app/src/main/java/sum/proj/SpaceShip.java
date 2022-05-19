@@ -28,14 +28,14 @@ public class SpaceShip {
 
     boolean onDelete=false;
 
-    /*TODO: delete*/ int color_of_radius = Color.WHITE;
+    /*TODO: delete*/ //int color_of_radius = Color.WHITE;
 
 
     SpaceShip(){
-        int a[][] = new int[10][1];
+        int a[][] = new int[100][1];
         for(int i=0;i<a.length;i++)
             for(int j=0;j<a[i].length;j++)
-                a[i][j] = 3 * (int)(Math.random()+0.5)+1;
+                a[i][j] = (int)(Math.random()*5+1);
         load_matrix_from_int(a);
     }
 
@@ -82,13 +82,13 @@ public class SpaceShip {
         canvas.rotate(-angle);
 
         p.setColor(Color.rgb(100, 100, 100));
-        Paint cirpaint = new Paint();
+        //Paint cirpaint = new Paint();
 
-        cirpaint.setColor(color_of_radius);
-        canvas.drawCircle(mass_x, mass_y, radius, cirpaint);
-        color_of_radius = Color.argb(50, 255, 255, 255);
+        //cirpaint.setColor(color_of_radius);
+        //canvas.drawCircle(mass_x, mass_y, radius, cirpaint);
+        //color_of_radius = Color.argb(50, 255, 255, 255);
 
-        cirpaint.setColor(Color.argb(50, 0, 255, 0));
+        //cirpaint.setColor(Color.argb(50, 0, 255, 0));
         for(int i=0;i<mat.length;i++)
             for(int j=0;j<mat[i].length;j++){
                 if(mat[i][j] != null){
@@ -112,6 +112,7 @@ public class SpaceShip {
     void upd(MainGame mainGame, Canvas canvas){
         ddx = 0;ddy = 0;ddan = 0;
         boolean onPossibleDelete = true;
+        boolean need_to_crack = false;
         for(int i=0;i<mat.length;i++){
             for(int j=0;j<mat[i].length;j++) {
                 if (mat[i][j] != null){
@@ -146,16 +147,17 @@ public class SpaceShip {
                                         xn+Block.size*0.45f*_x-Block.size*0.3f*_y, yn+Block.size*0.45f*_y+Block.size*0.3f*_x, speed*_x, speed*_y));
                             }break;
                         }
+
                     }
                     mat[i][j].update_this_block();
                     if(mat[i][j].hp <= 0){
                         mat[i][j] = null;
-                        crack(mainGame);
+                        need_to_crack = true;
+                        //crack(mainGame);
                     }
                 }
             }
         }
-        onDelete |= onPossibleDelete;
 
         dx += ddx;
         dy += ddy;
@@ -179,6 +181,10 @@ public class SpaceShip {
         if(dan > friction){ dan -= friction;
         }else if(dan < -friction){dan += friction;
         }else dan = 0;
+
+        // Tearing apart
+        if(need_to_crack){ crack(mainGame); }
+        onDelete |= onPossibleDelete;
     }
 
 
@@ -241,7 +247,7 @@ public class SpaceShip {
 
     public void xBullet(Bullet bullet, Player player, Canvas canvas) {
         if(Round.Round_x_Round(bullet.x, bullet.y, 2, x-player.x, y-player.y, radius)){
-            color_of_radius = Color.argb(150, 255, 0, 0);
+            //color_of_radius = Color.argb(150, 255, 0, 0);
             for(int i=0;i<mat.length;i++){
                 for(int j=0;j<mat[i].length;j++){
                     if(mat[i][j] != null){
@@ -302,6 +308,7 @@ public class SpaceShip {
                         positions[types[i][j]].x = Math.min(i, positions[types[i][j]].x);
                         positions[types[i][j]].y = Math.min(j, positions[types[i][j]].y);
                     }
+            float old_mass_x = mass_x, old_mass_y = mass_y;
             for(int i=0;i<type;i++){
                 SpaceShip last;
                 if(i==type_with_controller){
@@ -311,10 +318,11 @@ public class SpaceShip {
                     last = mainGame.ships.get(mainGame.ships.size()-1);
                 }
                 last.parse_from_blockTree(ships[i]);
-                float _X=(last.mass_x-mass_x+positions[i].x)*Block.size, _Y=(last.mass_y-mass_y+positions[i].y)*Block.size;
+                float _X=(last.mass_x-old_mass_x+positions[i].x)*Block.size, _Y=(last.mass_y-old_mass_y+positions[i].y)*Block.size;
                 float cosa = (float) Math.cos(-angle * 3.14 / 180), sina = (float) Math.sin(-angle * 3.14 / 180);
                 float __X = _X * cosa - _Y * sina, __Y = _Y * cosa + _X * sina;
-                last.setPosition(x + __X, y + __Y, angle);
+                Log.d("OKS", "I: " + i + "XY: " + __X + " " + __Y);
+                last.setPosition((x + __X), (y + __Y), angle);
             }
 
             if(type == 0)
