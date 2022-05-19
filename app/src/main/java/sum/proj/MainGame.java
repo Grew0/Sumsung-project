@@ -163,9 +163,9 @@ public class MainGame extends SurfaceView implements SurfaceHolder.Callback, Vie
                         for(int i=ships.size()-1;i>=0;i--) {
 
                             SpaceShip ship = ships.get(i);
-
-                            Log.d("DEBUG", String.valueOf(ship == null));
-                            ship.upd(MainGame.this, canvas);
+                            try{
+                                ship.upd(MainGame.this, canvas);
+                            }catch (Exception e){e.printStackTrace();}
 
                             for(Bullet bullet: bullets){
                                 ship.xBullet(bullet, player, canvas);
@@ -178,7 +178,6 @@ public class MainGame extends SurfaceView implements SurfaceHolder.Callback, Vie
                                 ships.remove(ships.size()-1);
                             }
                         }
-
                         Log.d("SPsize", "SPsize: " + ships.size());
 
                         // Обновление пуль
