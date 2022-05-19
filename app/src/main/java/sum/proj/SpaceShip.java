@@ -103,7 +103,7 @@ public class SpaceShip {
             }
 
         p.setColor(Color.WHITE);
-        canvas.drawCircle(mass_x, mass_y, 1, p);
+        //canvas.drawCircle(mass_x, mass_y, 1, p);
 
         canvas.rotate(angle);
         canvas.translate(-shift_x, -shift_y);
@@ -183,7 +183,10 @@ public class SpaceShip {
         }else dan = 0;
 
         // Tearing apart
-        if(need_to_crack){ crack(mainGame); }
+        if(need_to_crack){
+            Log.d("DEBUG", this.toString());
+            crack(mainGame);
+        }
         onDelete |= onPossibleDelete;
     }
 
@@ -298,7 +301,7 @@ public class SpaceShip {
                 positions[i] = new Point(mat.length, mat[0].length);
             }
 
-            int type_with_controller = 0;
+            int type_with_controller = type-1;
 
             for(int i=0;i<mat.length;i++)
                 for(int j=0;j<mat[i].length;j++)
@@ -308,21 +311,24 @@ public class SpaceShip {
                         positions[types[i][j]].x = Math.min(i, positions[types[i][j]].x);
                         positions[types[i][j]].y = Math.min(j, positions[types[i][j]].y);
                     }
-            float old_mass_x = mass_x, old_mass_y = mass_y;
-            for(int i=0;i<type;i++){
+            float old_mass_x = mass_x, old_mass_y = mass_y, old_angle=angle;
+            for(int I=0;I<type+1;I++){
+                int i=I;
                 SpaceShip last;
-                if(i==type_with_controller){
+                if(I==type_with_controller){
+                    continue;
+                }else if(I == type){
                     last = this;
+                    i = type_with_controller;
                 }else{
                     mainGame.ships.add(new SpaceShip());
                     last = mainGame.ships.get(mainGame.ships.size()-1);
                 }
                 last.parse_from_blockTree(ships[i]);
                 float _X=(last.mass_x-old_mass_x+positions[i].x)*Block.size, _Y=(last.mass_y-old_mass_y+positions[i].y)*Block.size;
-                float cosa = (float) Math.cos(-angle * 3.14 / 180), sina = (float) Math.sin(-angle * 3.14 / 180);
+                float cosa = (float) Math.cos(-old_angle * 3.14 / 180), sina = (float) Math.sin(-old_angle * 3.14 / 180);
                 float __X = _X * cosa - _Y * sina, __Y = _Y * cosa + _X * sina;
-                Log.d("OKS", "I: " + i + "XY: " + __X + " " + __Y);
-                last.setPosition((x + __X), (y + __Y), angle);
+                last.setPosition((x + __X), (y + __Y), old_angle);
             }
 
             if(type == 0)
