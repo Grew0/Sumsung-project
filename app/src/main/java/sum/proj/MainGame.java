@@ -56,6 +56,7 @@ public class MainGame extends SurfaceView implements SurfaceHolder.Callback, Vie
 
         ships.add(new SpaceShip());
         ships.get(1).setPosition(0, -150, 0);
+        ships.get(1).loadFromFile("Player");
 
         thr = new MainThread(getHolder());
         thr.start();
@@ -146,9 +147,20 @@ public class MainGame extends SurfaceView implements SurfaceHolder.Callback, Vie
                         canvas.translate((-width>>1)/scale_parameter, (-height>>1)/scale_parameter);
                         // Отрисовка кнопок
                         for(MyButton btn: buttons)
-                                    btn.draw(canvas, false, 1/scale_parameter);
+                            btn.draw(canvas, false, 1/scale_parameter);
+
+                        /// todo del
+                        /*for(int i=0;i<ships.size();i++) {
+                            Paint paint = new Paint();
+                            paint.setColor(Color.WHITE);
+                            paint.setTextSize(40);
+                            canvas.drawText(ships.get(i).toString(), 0, 40+i*50, paint);
+                        }*/
+                        /// end todo
+
                         canvas.translate((width>>1)/scale_parameter, (height>>1)/scale_parameter);
                         canvas.rotate(player.angle);
+
 
                         // Отрисовка пуль
                         for(Bullet bullet: bullets){ bullet.draw(canvas); }
@@ -165,7 +177,7 @@ public class MainGame extends SurfaceView implements SurfaceHolder.Callback, Vie
 
                             SpaceShip ship = ships.get(i);
                             //try{
-                                ship.upd(MainGame.this, canvas);
+                            ship.upd(MainGame.this, canvas);
                             //}catch (Exception e){e.printStackTrace();}
 
                             for(Bullet bullet: bullets){
