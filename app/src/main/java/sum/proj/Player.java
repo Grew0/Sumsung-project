@@ -9,7 +9,7 @@ public class Player extends  SpaceShip{
 
     public Player(){
         loadFromFile("Player");
-        setPosition(50, 50, 0);
+        setPosition(0, 0, 0);
     }
 
     void setWH(int w, int h, float scale_parameter){
